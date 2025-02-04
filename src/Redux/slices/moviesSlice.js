@@ -4,7 +4,8 @@ import axios from "axios";
 const initialState = {
     films: [],
     status: 'loading',
-    errors: null
+    errors: null,
+    searchFilm: null
 }
 
 export const fetchMovies = createAsyncThunk('movie/fetchmovies', () => {
@@ -26,23 +27,24 @@ export const fetchMovies = createAsyncThunk('movie/fetchmovies', () => {
             console.error(error);
             throw new Error(errorMessage);
         })
-    // try {
-    //     const movies = await fetch("https://676c1c82bc36a202bb86c01.mockapi.io/movies");
-    //     // if(!movies.ok) {
-    //     //     throw new Error('Error on server, sorry');
-    //     // }
-    //     return movies.json();
-    // } catch (error) {
-    //     console.error(error);
-    //     throw error;
-    // }
 })
 
 const moviesSlice = createSlice({
     name: "movie",
     initialState,
     reducers: {
-
+        getFilmInfo: (state, action) => {
+            const id = action.payload;
+            console.log(id);
+            const film = state.films.find(film => film.id === id);
+            if(film) {
+                state.searchFilm = film;
+                console.log('Сработало');
+                
+            } else {
+                console.log('Сработала ошибка');
+            }
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -56,7 +58,7 @@ const moviesSlice = createSlice({
             .addCase(fetchMovies.rejected, (state, action) => {
                 state.status = 'loading';
                 state.errors = action.error.message;
-                console.log(action);
+                // console.log(action);
                 console.error(action.error.message)
             })
     }
@@ -64,4 +66,4 @@ const moviesSlice = createSlice({
 
 
 export default moviesSlice.reducer;
-export const { test } = moviesSlice.actions;
+export const { getFilmInfo } = moviesSlice.actions;
